@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "firstProject",
-    "slug": "firstProject",
+    "name": "MobileDevelopment",
+    "slug": "uakpicomsysIO8220",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -23,7 +23,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "ua.kpi.comsys.IO8220"
     },
     "web": {
       "favicon": "./assets/favicon.png"
