@@ -49,6 +49,16 @@ class TimeOS {
   }
 
   formattedDate() {
+    if (this.hours === 0) {
+      return `12:${this.minutes < 10 ? "0" + this.minutes : this.minutes}:${
+        this.seconds < 10 ? "0" + this.seconds : this.seconds
+      } AM`;
+    }
+    if (this.hours === 12) {
+      return `12:${this.minutes < 10 ? "0" + this.minutes : this.minutes}:${
+        this.seconds < 10 ? "0" + this.seconds : this.seconds
+      } PM`;
+    }
     return `${
       this.hours <= 12
         ? this.hours < 10
@@ -59,80 +69,82 @@ class TimeOS {
       this.seconds < 10 ? "0" + this.seconds : this.seconds
     } ${this.hours <= 12 ? "AM" : "PM"}`;
   }
-  sumOfDate(dateObj) {
-    const [hours, minutes, seconds] = [
-      dateObj.hours,
-      dateObj.minutes,
-      dateObj.seconds,
-    ];
-    let resultHours = 0,
-      resultMinutes = 0,
-      resultSeconds = 0;
-    if (seconds + this.seconds < 60) {
-      resultSeconds = seconds + this.seconds;
-    } else {
-      resultMinutes += Math.floor((seconds + this.seconds) / 60);
-      resultSeconds +=
-        seconds + this.seconds - Math.floor((seconds + this.seconds) / 60) * 60;
-    }
-    if (minutes + this.minutes + resultMinutes < 60) {
-      resultMinutes = minutes + this.minutes;
-    } else {
-      resultHours += Math.floor((minutes + this.minutes) / 60);
-      resultMinutes =
-        minutes +
-        this.minutes +
-        resultMinutes -
-        Math.floor((minutes + this.minutes + resultMinutes) / 60) * 60;
-    }
-    if (hours + this.hours + resultHours < 24) {
-      resultHours += hours + this.hours;
-    } else {
-      resultHours =
-        hours +
-        this.hours +
-        resultHours -
-        Math.floor((hours + this.hours + resultHours) / 23) * 23;
-    }
-    return new TimeOS(resultHours, resultMinutes, resultSeconds);
-  }
-  differenceBetweenDate(dateObj) {
-    const [hours, minutes, seconds] = [
-      dateObj.hours,
-      dateObj.minutes,
-      dateObj.seconds,
-    ];
-    let resultHours = 0,
-      resultMinutes = 0,
-      resultSeconds = 0;
-    if (this.seconds - seconds > 0) {
-      resultSeconds = this.seconds - seconds;
-    } else {
-      resultMinutes -= 1;
-      resultSeconds = 60 + this.seconds - seconds;
-    }
 
-    if (this.minutes - minutes + resultMinutes > 0) {
-      resultMinutes += this.minutes - minutes;
-    } else {
-      resultHours -= 1;
-      resultMinutes += 60 + this.minutes - minutes;
+ static sumOfDate(dateObj1,dateObj2) {
+    const [hours, minutes, seconds] = [
+      dateObj1.hours,
+      dateObj1.minutes,
+      dateObj1.seconds,
+    ];
+    const [hours2, minutes2, seconds2] = [
+      dateObj2.hours,
+      dateObj2.minutes,
+      dateObj2.seconds
+    ]
+    let resultHours = 0,
+      resultMinutes = 0,
+      resultSeconds = 0;
+    resultHours = hours + hours2;
+    resultMinutes = minutes + minutes2;
+    resultSeconds = seconds + seconds2;
+    if (resultSeconds > 59) {
+      resultSeconds -= 60;
+      resultMinutes += 1;
     }
-    if (this.hours - hours + resultHours > 0) {
-      resultHours += this.hours - hours;
-    } else {
-      resultHours += 24 + this.hours - hours;
+    if (resultMinutes > 59){
+      resultMinutes -= 60;
+      resultHours += 1;
+    }
+    if (resultHours > 23){
+      resultHours -= 24
+    }
+    return new TimeOS(resultHours,resultMinutes,resultSeconds)
+  }
+
+  static differenceBetweenDate(dateObj1,dateObj2) {
+    const [hours, minutes, seconds] = [
+      dateObj1.hours,
+      dateObj1.minutes,
+      dateObj1.seconds,
+    ];
+    const [hours2, minutes2, seconds2] = [
+      dateObj2.hours,
+      dateObj2.minutes,
+      dateObj2.seconds,
+    ];
+    let resultHours = 0,
+      resultMinutes = 0,
+      resultSeconds = 0;
+    resultHours = hours - hours2;
+    resultMinutes = minutes - minutes2;
+    resultSeconds = seconds - seconds2;
+    if (resultSeconds < 0){
+      resultSeconds += 60;
+      resultMinutes -= 1;
+    }
+    if (resultMinutes < 0){
+      resultMinutes += 60;
+      resultHours -= 0;
+    }
+    if (resultHours < 0){
+      resultHours += 23;
     }
     return new TimeOS(resultHours, resultMinutes, resultSeconds);
   }
 }
-const time1 = new TimeOS(23, 59, 59);
-const time2 = new TimeOS(12, 0, 1);
-const time3 = new TimeOS(new Date("December 17, 1995 00:00:00"));
-const time4 = new TimeOS(new Date("December 17, 1995 00:00:01"));
-const time5 = new TimeOS();
-console.log(time1.sumOfDate(time2));
-console.log(time3.differenceBetweenDate(time4));
-console.log(time1.formattedDate());
-console.log(time2.formattedDate());
-console.log(time3.formattedDate());
+
+// for (let i = 0; i < 24; i++) {
+//   const time1 = new TimeOS(i, 0, 0);
+//   console.log(time1.formattedDate());
+// }
+const time3 = new TimeOS(23, 59, 59);
+const time4 = new TimeOS(12, 0, 0);
+console.log(time4.formattedDate());
+console.log(TimeOS.sumOfDate(time3,time4));
+const time5 = new TimeOS(0, 0, 0);
+const time6 = new TimeOS(0, 0, 0);
+console.log(TimeOS.differenceBetweenDate(time5,time6));
+const time7 = new TimeOS(new Date("December 17, 1995 00:00:00"));
+const time8 = new TimeOS(new Date("December 17, 1995 00:00:01"));
+const time9 = new TimeOS();
+
