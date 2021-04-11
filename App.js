@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Home from './Views/Home';
-import Updates from './Views/Updates'
+import DrawingView from './Views/DrawingView'
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -31,12 +31,12 @@ function MyTabs() {
         }}
       />
       <Tab.Screen
-        name="Updates"
-        component={Updates}
+        name="Plots"
+        component={DrawingView}
         options={{
-          tabBarLabel: 'Updates',
+          tabBarLabel: 'Plots',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="bell" color={color} size={26} />
+            <MaterialCommunityIcons name="chart-scatter-plot" color={color} size={26} />
           ),
         }}
       />
