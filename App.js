@@ -6,6 +6,7 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Home from './Views/Home';
 import DrawingView from './Views/DrawingView'
+import MoviesView from './Views/MoviesView';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -37,6 +38,16 @@ function MyTabs() {
           tabBarLabel: 'Plots',
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="chart-scatter-plot" color={color} size={26} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Movies"
+        component={MoviesView}
+        options={{
+          tabBarLabel: 'Movies',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="filmstrip" color={color} size={26} />
           ),
         }}
       />
