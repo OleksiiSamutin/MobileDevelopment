@@ -1,11 +1,9 @@
 import React, { Component} from "react";
 import { StyleSheet, Text, View,Dimensions } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-// import * as RNFS from 'react-native-fs';
-// import { Asset } from 'expo-asset';
-// import * as FileSystem from 'expo-file-system';
 import Movie from "../../Components/Movie";
 import * as data from "./files/MoviesList.json";
+import MovieDetails from "../../Components/Movie/MovieDetailsExport";
 import * as ScreenOrientation from "expo-screen-orientation";
 
 const styles = StyleSheet.create({
@@ -54,7 +52,8 @@ class MoviesView extends React.Component {
       <View style={styles.container}>
         <ScrollView>
           {data.Search.map((film) => {
-            return new Movie(film).renderMoviePreview(this.state.screenWidth);
+            const Details = MovieDetails[film.imdbID] ? MovieDetails[film.imdbID] : {};
+            return new Movie({...film, Details}).renderMoviePreview(this.state.screenWidth);
           })}
         </ScrollView>
       </View>

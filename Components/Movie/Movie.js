@@ -5,13 +5,30 @@ import Posters from "./PostersExport";
 const windowWidth = Dimensions.get("window").width;
 
 class Movie {
-  constructor({ Title, Year, imdbID, noid, Type, Poster }) {
+  constructor({ Title, Year, imdbID, noid, Type, Poster, Details: {
+    Rated,
+    Released,
+    Runtime,
+    Genre,
+    Director,
+    Writer,
+    Actors,
+    Plot,
+    Language,
+    Country,
+    Awards,
+    imdbRating,
+    imdbVotes,
+    Production
+  } }) {
     this.title = Title;
     this.year = Year;
     this.imdbID = imdbID;
     this.noid = noid;
     this.type = Type;
     this.poster = Poster;
+    this.production = Production
+
   }
   findPosterImage = () => {
     if (this.poster && Posters[this.poster.split(".jpg")[0]]) {
@@ -66,9 +83,10 @@ class Movie {
           <View>
             <Text>{this.title}</Text>
             <Text>{this.year}</Text>
-            <Text>{this.imdbID}</Text>
+            {/* <Text>{this.imdbID}</Text> */}
             <Text>{this.noid}</Text>
             <Text>{this.type}</Text>
+
           </View>
         </View>
       </View>
