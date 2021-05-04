@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width,
     marginTop: 10,
     marginBottom: 20,
+    padding: 5
   },
   inputsWrapper: {
     marginTop: 20,

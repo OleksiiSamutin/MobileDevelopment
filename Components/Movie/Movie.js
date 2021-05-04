@@ -74,7 +74,7 @@ class Movie extends React.Component {
       },
       col1: {
         paddingRight: 10,
-        backgroundColor: "white",
+        // backgroundColor: "transparent",
       },
       col2: {
         width: this.props.screenWidth - 80,
