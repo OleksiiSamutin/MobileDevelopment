@@ -7,7 +7,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Home from './Views/Home';
 import DrawingView from './Views/DrawingView'
 import MoviesView from './Views/MoviesView';
-
+import ImageGallery from './Views/ImageGallery';
+import { Entypo } from '@expo/vector-icons';
 const Tab = createMaterialBottomTabNavigator();
 
 function MyTabs() {
@@ -48,6 +49,16 @@ function MyTabs() {
           tabBarLabel: 'Movies',
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="filmstrip" color={color} size={26} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="ImageGallery"
+        component={ImageGallery}
+        options={{
+          tabBarLabel: 'Image gallery',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="image" size={24} color={color} />
           ),
         }}
       />
