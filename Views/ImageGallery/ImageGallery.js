@@ -4,12 +4,16 @@ import {
   Text,
   StyleSheet,
   Button,
-  Image,
   Dimensions,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
+import axios from "axios";
+
 import * as ImagePicker from "expo-image-picker";
 import { ScrollView } from "react-native-gesture-handler";
 import * as ScreenOrientation from "expo-screen-orientation";
+import {Image} from 'react-native-elements'
 const arraySplitter = (arr = [], maxArrSize = 9) => {
   const result = [];
   for (let i = 0; i < Math.ceil(arr.length / maxArrSize); i++) {
@@ -19,10 +23,10 @@ const arraySplitter = (arr = [], maxArrSize = 9) => {
 };
 
 const GenerateRows = (props) => {
-    const {images,width,height,orientation} = props
+  const { images, width, height, orientation } = props;
   const styles = StyleSheet.create({
     imageGallery: {
-      flex: 1,
+      flex: 0,
       alignItems: "center",
       justifyContent: "flex-start",
       paddingTop: 20,
@@ -33,7 +37,7 @@ const GenerateRows = (props) => {
     row1: {
       flex: 0,
       flexDirection: "row",
-      paddingTop: 10,
+      // paddingTop: 10,
       backgroundColor: "white",
       height: orientation === "portrait" ? width / 1.5 : width / (3 / 2),
       justifyContent: "space-between",
@@ -66,7 +70,7 @@ const GenerateRows = (props) => {
       backgroundColor: "#F038FF",
     },
     emptycol: {
-      flex: 1,
+      flex: 0,
       backgroundColor: "white",
     },
     emptyBigcol: {
@@ -97,18 +101,30 @@ const GenerateRows = (props) => {
     <View style={styles.row1}>
       <View style={images[0] ? styles.col9_2 : styles.emptyBigcol}>
         {images[0] ? (
-          <Image source={{ uri: images[0] }} style={styles.img} />
+          <Image
+            source={{ uri: images[0].largeImageURL }}
+            style={styles.img}
+            PlaceholderContent={ <ActivityIndicator size="large" color="#0000ff" />}
+          />
         ) : null}
       </View>
       <View style={styles.col3_1}>
         <View style={images[1] ? styles.col1_3 : styles.emptycol}>
           {images[1] ? (
-            <Image source={{ uri: images[1] }} style={styles.img} />
+            <Image
+              source={{ uri: images[1].largeImageURL }}
+              style={styles.img}
+              PlaceholderContent={ <ActivityIndicator size="large" color="#0000ff" />}
+            />
           ) : null}
         </View>
         <View style={images[2] ? styles.col1_3 : styles.emptycol}>
           {images[2] ? (
-            <Image source={{ uri: images[2] }} style={styles.img} />
+            <Image
+              source={{ uri: images[2].largeImageURL }}
+              style={styles.img}
+              PlaceholderContent={ <ActivityIndicator size="large" color="#0000ff" />}
+            />
           ) : null}
         </View>
       </View>
@@ -118,17 +134,35 @@ const GenerateRows = (props) => {
     <View style={styles.row2}>
       <View style={images[3] ? styles.col1_3 : styles.emptycol}>
         {images[3] ? (
-          <Image source={{ uri: images[3] }} style={styles.img} />
+          <Image
+            source={{ uri: images[3].largeImageURL }}
+            style={styles.img}
+            indicator={() => {
+              return <Text>Loading</Text>;
+            }}
+          />
         ) : null}
       </View>
       <View style={images[4] ? styles.col1_3 : styles.emptycol}>
         {images[4] ? (
-          <Image source={{ uri: images[4] }} style={styles.img} />
+          <Image
+            source={{ uri: images[4].largeImageURL }}
+            style={styles.img}
+            indicator={() => {
+              return <Text>Loading</Text>;
+            }}
+          />
         ) : null}
       </View>
       <View style={images[5] ? styles.col1_3 : styles.emptycol}>
         {images[5] ? (
-          <Image source={{ uri: images[5] }} style={styles.img} />
+          <Image
+            source={{ uri: images[5].largeImageURL }}
+            style={styles.img}
+            indicator={() => {
+              return <Text>Loading</Text>;
+            }}
+          />
         ) : null}
       </View>
     </View>
@@ -138,18 +172,32 @@ const GenerateRows = (props) => {
       <View style={styles.col3_1}>
         <View style={images[6] ? styles.col1_3 : styles.emptycol}>
           {images[6] ? (
-            <Image source={{ uri: images[6] }} style={styles.img} />
+            <Image
+              source={{ uri: images[6].largeImageURL }}
+              style={styles.img}
+              PlaceholderContent={ <ActivityIndicator size="large" color="#0000ff" />}
+            />
           ) : null}
         </View>
         <View style={images[7] ? styles.col1_3 : styles.emptycol}>
           {images[7] ? (
-            <Image source={{ uri: images[7] }} style={styles.img} />
+            <Image
+              source={{ uri: images[7].largeImageURL }}
+              style={styles.img}
+              PlaceholderContent={ <ActivityIndicator size="large" color="#0000ff" />}
+            />
           ) : null}
         </View>
       </View>
       <View style={images[8] ? styles.col9_2 : styles.emptyBigcol}>
         {images[8] ? (
-          <Image source={{ uri: images[8] }} style={styles.img} />
+          <Image
+            source={{ uri: images[8].largeImageURL }}
+            style={styles.img}
+            indicator={() => {
+              return <Text>Loading</Text>;
+            }}
+          />
         ) : null}
       </View>
     </View>
@@ -196,14 +244,21 @@ class ImageGallery extends React.Component {
     ScreenOrientation.removeOrientationChangeListeners();
   }
   componentDidMount() {
-    ScreenOrientation.getOrientationAsync().then((orientation) => {
-      const orientation1 =
-        orientation1.orientationInfo.orientation ==
-        ScreenOrientation.Orientation.PORTRAIT_UP
-          ? "portrait"
-          : "landscape";
-      this.setState({ orientation: orientation1 });
-    });
+    axios
+      .get(
+        "https://pixabay.com/api/?key=19193969-87191e5db266905fe8936d565&q=%E2%80%9Cyellow+flowers%E2%80%9D&image_type=photo&per_page=27"
+      )
+      .then((res) => {
+        this.setState({ images: res.data.hits });
+      });
+    // ScreenOrientation.getOrientationAsync().then((orientation) => {
+    //   const orientation1 =
+    //     orientation1.orientationInfo.orientation ==
+    //     ScreenOrientation.Orientation.PORTRAIT_UP
+    //       ? "portrait"
+    //       : "landscape";
+    //   this.setState({ orientation: orientation1 });
+    // });
     ScreenOrientation.addOrientationChangeListener((rotationEvent) => {
       const orientation =
         rotationEvent.orientationInfo.orientation ==
@@ -220,14 +275,24 @@ class ImageGallery extends React.Component {
   }
 
   render() {
-    const { images,screenWidth,screenHeight,orientation } = this.state;
+    const { images, screenWidth, screenHeight, orientation } = this.state;
+    // Alert.alert(JSON.stringify(images));
     return (
       <ScrollView contentContainerStyle={{ paddingTop: 20 }}>
-        <Button title="Pick an image from gallery" onPress={this.pickImage} />
+        {/* <Button title="Pick an image from gallery" onPress={this.pickImage} /> */}
         <View>
-          {arraySplitter(images).map((image, i) => (
-            <GenerateRows key={i} images={image} orientation={orientation} width={screenWidth}/>
-          ))}
+          {images.length !== 0
+            ? arraySplitter(images).map((image, i) => (
+                <GenerateRows
+                  key={i}
+                  images={image}
+                  orientation={orientation}
+                  width={screenWidth}
+                  height={screenHeight}
+                />
+              ))
+            : null}
+          {/* {} */}
         </View>
       </ScrollView>
     );

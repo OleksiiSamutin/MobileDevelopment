@@ -113,19 +113,17 @@ class Movie extends React.Component {
         marginBottom: 15,
       },
     });
+    const Image_Http_URL = { uri: this.props.Poster };
     return (
       <View>
         {this.props.withDetails ? (
           <View style={styles.detailsWrapper}>
-            {this.findPosterImage() ? (
-              <Image
-                source={this.findPosterImage()}
-                style={styles.detailsImages}
-                width="150"
-              />
-            ) : (
-              <View style={styles.images}></View>
-            )}
+            <Image
+              source={Image_Http_URL}
+              style={styles.detailsImages}
+              width="150"
+            />
+
             <View style={styles.detailsTextContainer}>
               <Text style={styles.details}>
                 Title:{" "}
@@ -133,98 +131,85 @@ class Movie extends React.Component {
               </Text>
               <Text style={styles.details}>
                 Year:{" "}
-                <Text style={styles.defaultTextColor}>
-                  {" "}
-                  {this.props.Details.Year}
-                </Text>
+                <Text style={styles.defaultTextColor}> {this.props.Year}</Text>
               </Text>
               <Text style={styles.details}>
                 Genre:{" "}
-                <Text style={styles.defaultTextColor}>
-                  {" "}
-                  {this.props.Details.Genre}
-                </Text>
+                <Text style={styles.defaultTextColor}> {this.props.Genre}</Text>
               </Text>
             </View>
-
             <View style={styles.detailsTextContainer}>
               <Text style={styles.details}>
                 Director:{" "}
                 <Text style={styles.defaultTextColor}>
                   {" "}
-                  {this.props.Details.Director}
+                  {this.props.Director}
                 </Text>
               </Text>
               <Text style={styles.details}>
                 Actors:{" "}
                 <Text style={styles.defaultTextColor}>
                   {" "}
-                  {this.props.Details.Actors}
+                  {this.props.Actors}
                 </Text>
               </Text>
             </View>
-
             <View style={styles.detailsTextContainer}>
               <Text style={styles.details}>
                 Country:{" "}
                 <Text style={styles.defaultTextColor}>
                   {" "}
-                  {this.props.Details.Country}
+                  {this.props.Country}
                 </Text>
               </Text>
               <Text style={styles.details}>
                 Language:{" "}
                 <Text style={styles.defaultTextColor}>
                   {" "}
-                  {this.props.Details.Language}
+                  {this.props.Language}
                 </Text>
               </Text>
               <Text style={styles.details}>
                 Production:{" "}
                 <Text style={styles.defaultTextColor}>
                   {" "}
-                  {this.props.Details.Production}
+                  {this.props.Production}
                 </Text>
               </Text>
               <Text style={styles.details}>
                 Released:{" "}
                 <Text style={styles.defaultTextColor}>
                   {" "}
-                  {this.props.Details.Released}
+                  {this.props.Released}
                 </Text>
               </Text>
               <Text style={styles.details}>
                 Runtime:{" "}
                 <Text style={styles.defaultTextColor}>
                   {" "}
-                  {this.props.Details.Runtime}
+                  {this.props.Runtime}
                 </Text>
               </Text>
             </View>
-
             <View style={styles.detailsTextContainer}>
               <Text style={styles.details}>
                 Awards:{" "}
                 <Text style={styles.defaultTextColor}>
                   {" "}
-                  {this.props.Details.Awards}
+                  {this.props.Awards}
                 </Text>
               </Text>
               <Text style={styles.details}>
                 Raiting:{" "}
                 <Text style={styles.defaultTextColor}>
                   {" "}
-                  {this.props.Details.imdbRating}/10
+                  {this.props.imdbRating}/10
                 </Text>
               </Text>
             </View>
-
             <Text style={styles.details}>
               Plot:{" "}
-              <Text style={styles.defaultTextColor}>
-                {" "}
-                {this.props.Details.Plot}
-              </Text>
+              <Text style={styles.defaultTextColor}> {this.props.Plot}</Text>
             </Text>
           </View>
         ) : (
@@ -235,20 +220,17 @@ class Movie extends React.Component {
           >
             <TouchableHighlight
               onPress={() => {
-                this.props.openDetails(this.props);
+                // this.setState({loadingDetails: true})
+                this.props.openDetails(this.props.imdbID);
               }}
             >
               <View style={styles.container}>
                 <View style={styles.col1}>
-                  {this.findPosterImage() ? (
-                    <Image
-                      source={this.findPosterImage()}
-                      style={styles.images}
-                      width="40"
-                    />
-                  ) : (
-                    <View style={styles.images}></View>
-                  )}
+                  <Image
+                    source={Image_Http_URL}
+                    style={styles.images}
+                    width="40"
+                  />
                 </View>
                 <View style={styles.col2}>
                   <View>

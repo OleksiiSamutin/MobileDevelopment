@@ -7,7 +7,8 @@ import {
   TextInput,
   Button,
   Alert,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  ActivityIndicator,
 } from "react-native";
 import { SearchBar } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
@@ -16,6 +17,8 @@ import * as data from "./files/MoviesList.json";
 import MovieDetails from "../../Components/Movie/MovieDetailsExport";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { AntDesign } from "@expo/vector-icons";
+import axios from "axios";
+import { ScreenWidth } from "react-native-elements/dist/helpers";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -43,13 +46,14 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width,
     marginTop: 10,
     marginBottom: 20,
-    padding: 5
+    padding: 5,
   },
   inputsWrapper: {
     marginTop: 20,
     marginBottom: 20,
   },
   upperSearchPanel: {
+    width: Dimensions.get("window").width,
     backgroundColor: "#FCE762",
   },
   searchBar: {},
@@ -65,12 +69,24 @@ class MoviesView extends React.Component {
       orientation: "portrait",
       screenWidth: Dimensions.get("window").width,
       screenHeight: Dimensions.get("window").height,
-      movies: data.Search,
+      movies: [],
       search: "",
+      isLoading: false,
     };
   }
-  openDetails = (filmInfo) => {
-    this.setState({ isOpenDetails: true, currentMovie: filmInfo });
+  openDetails = (imdbID) => {
+    this.setState({ isLoading: true });
+    axios
+      .get(`http://www.omdbapi.com/?apikey=7e9fe69e&i=${imdbID}`)
+      .then((res) => {
+        // Alert.alert(JSON.stringify(res.data))
+        const Details = res.data;
+        this.setState({
+          isOpenDetails: true,
+          currentMovie: Details,
+          isLoading: false,
+        });
+      });
   };
   componentWillUnmount() {
     ScreenOrientation.removeOrientationChangeListeners();
@@ -114,6 +130,26 @@ class MoviesView extends React.Component {
     this.setState({ movies: newArray });
   };
   updateSearch = (search) => {
+    const regex = /^[\sA-Za-z0-9._~()'!*:@,;+?-]*$/;
+    this.setState({ errorInput: false });
+    if (search.length >= 3) {
+      if (search.match(regex)) {
+        this.setState({ isLoading: true });
+        axios
+          .get(
+            `http://www.omdbapi.com/?apikey=7e9fe69e&s=${search.trim()}&page=1`
+          )
+          .then((result) => {
+            // result.
+            // Alert.alert(JSON.stringify(resul))
+            this.setState({ movies: result.data.Search, isLoading: false });
+          });
+      } else {
+        this.setState({ errorInput: true });
+      }
+    } else {
+      this.setState({ movies: undefined });
+    }
     this.setState({ search });
   };
   addFilm = () => {
@@ -154,28 +190,30 @@ class MoviesView extends React.Component {
       currentMovie,
       movies,
       search,
+      isLoading,
+      errorInput
     } = this.state;
-    const filteredMovies = movies
-      .map((film, i) => {
-        const Details = MovieDetails[film.imdbID]
-          ? MovieDetails[film.imdbID]
-          : {};
-        return (
-          <Movie
-            {...film}
-            Details={Details}
-            screenWidth={screenWidth}
-            openDetails={this.openDetails}
-            keyId={i}
-            deleteMovie={this.deleteMovie}
-          />
-        );
-      })
-      .filter((movie) => {
-        if (movie.props.Title.toLowerCase().includes(search.toLowerCase())) {
-          return movie;
-        }
-      });
+    // const filteredMovies = movies
+    // .map((film, i) => {
+    //   const Details = MovieDetails[film.imdbID]
+    //     ? MovieDetails[film.imdbID]
+    //     : {};
+    //   return (
+    //     <Movie
+    //       {...film}
+    //       Details={Details}
+    //       screenWidth={screenWidth}
+    //       openDetails={this.openDetails}
+    //       keyId={i}
+    //       deleteMovie={this.deleteMovie}
+    //     />
+    //   );
+    // })
+    //   .filter((movie) => {
+    //     if (movie.props.Title.toLowerCase().includes(search.toLowerCase())) {
+    //       return movie;
+    //     }
+    //   });
     return (
       <KeyboardAvoidingView style={styles.container}>
         {addNewFilm ? (
@@ -235,7 +273,7 @@ class MoviesView extends React.Component {
           </ScrollView>
         ) : (
           <ScrollView stickyHeaderIndices={[0]}>
-            <View style={styles.upperSearchPanel}>
+            <View style={{ ...styles.upperSearchPanel, width: screenWidth }}>
               <SearchBar
                 placeholder="Type Here..."
                 onChangeText={this.updateSearch}
@@ -244,6 +282,7 @@ class MoviesView extends React.Component {
                   ...styles.searchBar,
                   width: screenWidth - 40,
                 }}
+                showLoading={isLoading}
                 lightTheme={true}
               />
               <View style={styles.addFilmBtnWrapp}>
@@ -259,19 +298,40 @@ class MoviesView extends React.Component {
               </View>
             </View>
 
-            {filteredMovies.length === 0 ? (
+            {!movies || isLoading || errorInput ? (
               <View
                 style={{
                   width: screenWidth,
-                  height: screenHeight/2,
+                  height: screenHeight / 2,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
               >
-                <Text>No items found</Text>
+                {errorInput ? (
+                  <Text style={{textAlign:"center"}}>
+                    You shouldn't enter non-latin characters or special characters
+                  </Text>
+                ) : null}
+                {isLoading ? (
+                  <ActivityIndicator size="large" color="#0000ff" />
+                ) : null}
               </View>
             ) : (
-              filteredMovies
+              movies.map((film, i) => {
+                const Details = MovieDetails[film.imdbID]
+                  ? MovieDetails[film.imdbID]
+                  : {};
+                return (
+                  <Movie
+                    {...film}
+                    Details={Details}
+                    screenWidth={screenWidth}
+                    openDetails={this.openDetails}
+                    keyId={i}
+                    deleteMovie={this.deleteMovie}
+                  />
+                );
+              })
             )}
           </ScrollView>
         )}
