@@ -13,7 +13,9 @@ import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
 import { ScrollView } from "react-native-gesture-handler";
 import * as ScreenOrientation from "expo-screen-orientation";
-import {Image} from 'react-native-elements'
+import { Image } from "react-native-elements";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const arraySplitter = (arr = [], maxArrSize = 9) => {
   const result = [];
   for (let i = 0; i < Math.ceil(arr.length / maxArrSize); i++) {
@@ -104,7 +106,9 @@ const GenerateRows = (props) => {
           <Image
             source={{ uri: images[0].largeImageURL }}
             style={styles.img}
-            PlaceholderContent={ <ActivityIndicator size="large" color="#0000ff" />}
+            PlaceholderContent={
+              <ActivityIndicator size="large" color="#0000ff" />
+            }
           />
         ) : null}
       </View>
@@ -114,7 +118,9 @@ const GenerateRows = (props) => {
             <Image
               source={{ uri: images[1].largeImageURL }}
               style={styles.img}
-              PlaceholderContent={ <ActivityIndicator size="large" color="#0000ff" />}
+              PlaceholderContent={
+                <ActivityIndicator size="large" color="#0000ff" />
+              }
             />
           ) : null}
         </View>
@@ -123,7 +129,9 @@ const GenerateRows = (props) => {
             <Image
               source={{ uri: images[2].largeImageURL }}
               style={styles.img}
-              PlaceholderContent={ <ActivityIndicator size="large" color="#0000ff" />}
+              PlaceholderContent={
+                <ActivityIndicator size="large" color="#0000ff" />
+              }
             />
           ) : null}
         </View>
@@ -175,7 +183,9 @@ const GenerateRows = (props) => {
             <Image
               source={{ uri: images[6].largeImageURL }}
               style={styles.img}
-              PlaceholderContent={ <ActivityIndicator size="large" color="#0000ff" />}
+              PlaceholderContent={
+                <ActivityIndicator size="large" color="#0000ff" />
+              }
             />
           ) : null}
         </View>
@@ -184,7 +194,9 @@ const GenerateRows = (props) => {
             <Image
               source={{ uri: images[7].largeImageURL }}
               style={styles.img}
-              PlaceholderContent={ <ActivityIndicator size="large" color="#0000ff" />}
+              PlaceholderContent={
+                <ActivityIndicator size="large" color="#0000ff" />
+              }
             />
           ) : null}
         </View>
@@ -239,18 +251,70 @@ class ImageGallery extends React.Component {
       this.setState({ images: copyImgs });
     }
   };
-
+  storeData = async (key, value) => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      await AsyncStorage.setItem(key, jsonValue);
+    } catch (e) {
+      // saving error
+    }
+  };
+  getData = async (key) => {
+    try {
+      const jsonValue = await AsyncStorage.getItem(key);
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+      // error reading value
+    }
+  };
+  storeData = async (key, value) => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      await AsyncStorage.setItem(key, jsonValue);
+    } catch (e) {
+      // saving error
+    }
+  };
+  getData = async (key) => {
+    try {
+      const jsonValue = await AsyncStorage.getItem(key);
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+      // error reading value
+    }
+  };
   componentWillUnmount() {
     ScreenOrientation.removeOrientationChangeListeners();
   }
   componentDidMount() {
-    axios
-      .get(
-        "https://pixabay.com/api/?key=19193969-87191e5db266905fe8936d565&q=%E2%80%9Cyellow+flowers%E2%80%9D&image_type=photo&per_page=27"
-      )
-      .then((res) => {
-        this.setState({ images: res.data.hits });
-      });
+    this.getData("Images").then((result) => {
+      // Alert.alert(JSON.stringify(result))
+      if (result !== null) {
+        this.setState({ images: result.data.hits });
+      } else {
+        axios
+          .get(
+            "https://pixabay.com/api/?key=19193969-87191e5db266905fe8936d565&q=%E2%80%9Cyellow+flowers%E2%80%9D&image_type=photo&per_page=27"
+          )
+          .then((result) => {
+            this.storeData("Images").then((res) => {
+              this.setState({ images: result.data.hits });
+            });
+            this.setState({ images: result.data.hits });
+          })
+          .catch((err) => {
+            // Alert.alert("Caching from storage")
+            this.getData("Images").then((result) => {
+              if (result !== null) {
+                this.setState({ images: result.data.hits });
+              } else {
+                Alert.alert("Nothing found in storage");
+              }
+            });
+          });
+      }
+    });
+
     // ScreenOrientation.getOrientationAsync().then((orientation) => {
     //   const orientation1 =
     //     orientation1.orientationInfo.orientation ==

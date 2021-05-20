@@ -18,6 +18,7 @@ import MovieDetails from "../../Components/Movie/MovieDetailsExport";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { AntDesign } from "@expo/vector-icons";
 import axios from "axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScreenWidth } from "react-native-elements/dist/helpers";
 const styles = StyleSheet.create({
   container: {
@@ -62,6 +63,8 @@ const styles = StyleSheet.create({
   },
 });
 
+
+
 class MoviesView extends React.Component {
   constructor(props) {
     super(props);
@@ -73,6 +76,22 @@ class MoviesView extends React.Component {
       search: "",
       isLoading: false,
     };
+  }
+  storeData = async (key,value) => {
+    try {
+      const jsonValue = JSON.stringify(value)
+      await AsyncStorage.setItem(key, jsonValue)
+    } catch (e) {
+      // saving error
+    }
+  }
+  getData = async (key) => {
+    try {
+      const jsonValue = await AsyncStorage.getItem(key)
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch(e) {
+      // error reading value
+    }
   }
   openDetails = (imdbID) => {
     this.setState({ isLoading: true });
@@ -140,9 +159,21 @@ class MoviesView extends React.Component {
             `http://www.omdbapi.com/?apikey=7e9fe69e&s=${search.trim()}&page=1`
           )
           .then((result) => {
+            this.storeData(search.trim(),result.data.Search);
             // result.
             // Alert.alert(JSON.stringify(resul))
             this.setState({ movies: result.data.Search, isLoading: false });
+          }).catch(err => {
+
+            this.getData(search.trim()).then(result => {
+              // Alert.alert(JSON.stringify(result))
+              if (result === null){
+                Alert.alert('Internet is not working and nothing found in database')
+              }
+              this.setState({movies:result,isLoading:false})
+            })
+
+
           });
       } else {
         this.setState({ errorInput: true });
